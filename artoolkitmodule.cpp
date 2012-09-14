@@ -11,8 +11,20 @@ class ARToolKit {
     public:
         ARToolKit(void) {
             char vconf[] = "v4l2src device=/dev/video0 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
-            if( arVideoOpen( vconf ) < 0 ) exit(0);
-            if( arVideoInqSize(&this->xsize, &this->ysize) < 0 ) exit(0);
+            if(arVideoOpen( vconf ) < 0) exit(0);
+
+            if(arVideoInqSize(&this->xsize, &this->ysize) < 0) exit(0);
+
+            ARParam  wparam, cparam;
+            char cparam_name[] = "Data/camera_para.dat";
+            if(arParamLoad(cparam_name, 1, &wparam) < 0) {
+                printf("Camera parameter load error !!\n");
+                exit(0);
+            }
+            arParamChangeSize(&wparam, this->xsize, this->ysize, &cparam);
+            arInitCparam(&cparam);
+            printf("*** Camera Parameter ***\n");
+            arParamDisp(&cparam);
         }
 
         void close(void) {
