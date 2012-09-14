@@ -41,19 +41,18 @@ class ARToolKit {
         }
 
         void update() {
-            ARUint8 *dataPtr;
             ARMarkerInfo *marker_info;
             int marker_num;
             int j, k;
 
-            if ((dataPtr = (ARUint8 *)arVideoGetImage()) == NULL) {
+            if ((this->dataPtr = (ARUint8 *)arVideoGetImage()) == NULL) {
                 arUtilSleep(2);
                 return;
             }
             if (count == 0) arUtilTimerReset();
             count++;
 
-            if (arDetectMarker(dataPtr, this->thresh, &marker_info, &marker_num) < 0) {
+            if (arDetectMarker(this->dataPtr, this->thresh, &marker_info, &marker_num) < 0) {
                 this->close();
                 exit(0);
             }
@@ -93,6 +92,16 @@ class ARToolKit {
             return ret;
         }
 
+        BP::list get_frame(void) {
+            BP::list ret;
+
+            for (int i=0; i<(this->xsize*this->ysize); i++) {
+                ret.append(this->dataPtr[i]);
+            }
+
+            return ret;
+        }
+
     private:
         int xsize, ysize;
         int patt_id;
@@ -101,6 +110,7 @@ class ARToolKit {
         static const double patt_width = 80.0;
         double patt_center[2];
         double patt_trans[3][4];
+        ARUint8 *dataPtr;
 };
 
 BOOST_PYTHON_MODULE(artoolkit) {
@@ -111,6 +121,7 @@ BOOST_PYTHON_MODULE(artoolkit) {
         .def("close", &ARToolKit::close)
 
         .add_property("size", &ARToolKit::get_size)
-        .add_property("matrix", &ARToolKit::get_matrix);
+        .add_property("matrix", &ARToolKit::get_matrix)
+        .add_property("frame", &ARToolKit::get_frame);
     ;
 }
