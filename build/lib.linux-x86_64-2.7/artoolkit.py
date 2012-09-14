@@ -45,8 +45,9 @@ while running:
 
 	screen.blit(pyimage, (0, 0))
 
-	x = int(matrix[0][3]+size[0]/2)
-	y = int(matrix[1][3]+size[1]/2)
+	pos = artoolkit.pos
+	x = int(pos[0])
+	y = int(pos[1])
 
 	angle = asin(gl_matrix[0][0])
 

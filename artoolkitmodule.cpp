@@ -84,6 +84,12 @@ class ARToolKit {
             return ret;
         }
 
+        BP::tuple get_pos(void) {
+            BP::tuple ret = BP::make_tuple(this->patt_trans[0][3]+this->xsize/2, this->patt_trans[1][3]+this->ysize/2);
+
+            return ret;
+        }
+
         BP::tuple get_matrix(void) {
             BP::tuple ret_0 = BP::make_tuple(this->patt_trans[0][0], this->patt_trans[0][1], this->patt_trans[0][2], this->patt_trans[0][3]);
             BP::tuple ret_1 = BP::make_tuple(this->patt_trans[1][0], this->patt_trans[1][1], this->patt_trans[1][2], this->patt_trans[1][3]);
@@ -135,6 +141,7 @@ BOOST_PYTHON_MODULE(artoolkit) {
         .def("close", &ARToolKit::close)
 
         .add_property("size", &ARToolKit::get_size)
+        .add_property("pos", &ARToolKit::get_pos)
         .add_property("matrix", &ARToolKit::get_matrix)
         .add_property("gl_matrix", &ARToolKit::get_gl_matrix)
         .add_property("frame", &ARToolKit::get_frame);
