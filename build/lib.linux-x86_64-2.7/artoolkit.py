@@ -9,22 +9,20 @@ from artoolkit import *
 artoolkit = ARToolKit()
 
 pygame.init()
-screen = pygame.display.set_mode(artoolkit.size)
+screen = pygame.display.set_mode((640, 480))
 pygame.display.set_caption('ARToolKit')
 
-frame = cv.CreateImage(artoolkit.size, cv.IPL_DEPTH_8U, 4)
-# frame = cv.CreateMat(artoolkit.size[0], artoolkit.size[1], cv.CV_8UC4)
+cv.NamedWindow('Camera')
 
 while True:
 	screen.fill((0, 0, 0))
 
 	artoolkit.update()
 
-	x = cv.fromarray(numpy.asarray(artoolkit.frame))
-	print x
-
-	image = pygame.image.frombuffer(frame.tostring(), cv.GetSize(frame), 'RGB')
-	screen.blit(image, (0, 0))
+	frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(480, 640, 3)
+	image = cv.fromarray(frame)
+	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
+	screen.blit(pyimage, (0, 0))
 
 	pygame.display.flip()
 # while

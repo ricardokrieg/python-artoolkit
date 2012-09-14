@@ -10,7 +10,8 @@ namespace BP = boost::python;
 class ARToolKit {
     public:
         ARToolKit(void) {
-            char vconf[] = "v4l2src device=/dev/video0 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
+            char vconf[] = "v4l2src device=/dev/video0 ! video/x-raw-yuv,width=640,height=480 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
+            // char vconf[] = "v4l2src device=/dev/video0 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
             if (arVideoOpen( vconf ) < 0) exit(0);
 
             if (arVideoInqSize(&this->xsize, &this->ysize) < 0) exit(0);
@@ -95,7 +96,7 @@ class ARToolKit {
         BP::list get_frame(void) {
             BP::list ret;
 
-            for (int i=0; i<(this->xsize*this->ysize); i++) {
+            for (unsigned int i=0; i<(640*480*3); i++) {
                 ret.append(this->dataPtr[i]);
             }
 
