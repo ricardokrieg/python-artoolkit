@@ -52,6 +52,7 @@ while running:
 
 	try:
 		pygame.draw.line(screen, (255, 0, 0), (x, y), (x+50*gl_matrix[0][1], y-50*gl_matrix[0][0]), 3)
+		pygame.draw.line(screen, (0, 0, 255), (x, y), (x+50*gl_matrix[0][0], y+50*gl_matrix[0][1]), 3)
 		pygame.draw.circle(screen, (0, 255, 0), (x, y), 5)
 	except: pass
 
