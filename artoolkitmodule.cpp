@@ -70,6 +70,7 @@ class ARToolKit {
             if (k == -1) return;
 
             arGetTransMat(&marker_info[k], this->patt_center, this->patt_width, this->patt_trans);
+            argConvGlpara(this->patt_trans, this->gl_para);
         }
 
         void close(void) {
@@ -84,11 +85,22 @@ class ARToolKit {
         }
 
         BP::tuple get_matrix(void) {
-            BP::tuple ret_0 = BP::make_tuple(this->patt_trans[0][0], this->patt_trans[0][1], this->patt_trans[0][2]);
-            BP::tuple ret_1 = BP::make_tuple(this->patt_trans[1][0], this->patt_trans[1][1], this->patt_trans[1][2]);
-            BP::tuple ret_2 = BP::make_tuple(this->patt_trans[2][0], this->patt_trans[2][1], this->patt_trans[2][2]);
+            BP::tuple ret_0 = BP::make_tuple(this->patt_trans[0][0], this->patt_trans[0][1], this->patt_trans[0][2], this->patt_trans[0][3]);
+            BP::tuple ret_1 = BP::make_tuple(this->patt_trans[1][0], this->patt_trans[1][1], this->patt_trans[1][2], this->patt_trans[1][3]);
+            BP::tuple ret_2 = BP::make_tuple(this->patt_trans[2][0], this->patt_trans[2][1], this->patt_trans[2][2], this->patt_trans[2][3]);
 
             BP::tuple ret = BP::make_tuple(ret_0, ret_1, ret_2);
+
+            return ret;
+        }
+
+        BP::tuple get_gl_matrix(void) {
+            BP::tuple ret_0 = BP::make_tuple(this->gl_para[0], this->gl_para[4], this->gl_para[8], this->gl_para[12]);
+            BP::tuple ret_1 = BP::make_tuple(this->gl_para[1], this->gl_para[5], this->gl_para[9], this->gl_para[13]);
+            BP::tuple ret_2 = BP::make_tuple(this->gl_para[2], this->gl_para[6], this->gl_para[10], this->gl_para[14]);
+            BP::tuple ret_3 = BP::make_tuple(this->gl_para[3], this->gl_para[7], this->gl_para[11], this->gl_para[15]);
+
+            BP::tuple ret = BP::make_tuple(ret_0, ret_1, ret_2, ret_3);
 
             return ret;
         }
@@ -111,6 +123,7 @@ class ARToolKit {
         static const double patt_width = 80.0;
         double patt_center[2];
         double patt_trans[3][4];
+        double gl_para[16];
         ARUint8 *dataPtr;
 };
 
@@ -123,6 +136,7 @@ BOOST_PYTHON_MODULE(artoolkit) {
 
         .add_property("size", &ARToolKit::get_size)
         .add_property("matrix", &ARToolKit::get_matrix)
+        .add_property("gl_matrix", &ARToolKit::get_gl_matrix)
         .add_property("frame", &ARToolKit::get_frame);
     ;
 }
