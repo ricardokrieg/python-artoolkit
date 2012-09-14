@@ -96,7 +96,7 @@ class ARToolKit {
         BP::list get_frame(void) {
             BP::list ret;
 
-            for (unsigned int i=0; i<(640*480*3); i++) {
+            for (unsigned int i=0; i<(this->xsize*this->ysize*3); i++) {
                 ret.append(this->dataPtr[i]);
             }
 
