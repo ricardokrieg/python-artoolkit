@@ -1,30 +1,32 @@
-# import pygame
-# from pygame.locals import *
-# import cv
+import pygame
+from pygame.locals import *
+import cv
+import inspect
+import numpy
 
 from artoolkit import *
 
 artoolkit = ARToolKit()
 
-# pygame.init()
-# screen = pygame.display.set_mode(artoolkit.size)
-# pygame.display.set_caption('ARToolKit')
+pygame.init()
+screen = pygame.display.set_mode(artoolkit.size)
+pygame.display.set_caption('ARToolKit')
 
-# device = cv.CreateCameraCapture(0)
+frame = cv.CreateImage(artoolkit.size, cv.IPL_DEPTH_8U, 4)
+# frame = cv.CreateMat(artoolkit.size[0], artoolkit.size[1], cv.CV_8UC4)
 
 while True:
-	# screen.fill((0, 0, 0))
+	screen.fill((0, 0, 0))
 
 	artoolkit.update()
-	print artoolkit.frame
 
-	# frame = cv.QueryFrame(device)
-	# cv.CvtColor(frame, frame, cv.CV_BGR2RGB)
-	# frame = pygame.image.frombuffer(frame.tostring(), cv.GetSize(frame), 'RGB')
+	x = cv.fromarray(numpy.asarray(artoolkit.frame))
+	print x
 
-	# screen.blit(frame, (0, 0))
+	image = pygame.image.frombuffer(frame.tostring(), cv.GetSize(frame), 'RGB')
+	screen.blit(image, (0, 0))
 
-	# pygame.display.flip()
+	pygame.display.flip()
 # while
 
 artoolkit.close()
