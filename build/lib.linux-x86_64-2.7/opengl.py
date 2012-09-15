@@ -36,21 +36,35 @@ def init():
 	gluLookAt(0,0,10, 0,0,0, 0,1,0)
 # init
 
-def surface_to_texture(surface):
-	textureData = pygame.image.tostring(surface, "RGBA", 1)
+def draw_surface(surface):
+	glEnable(GL_TEXTURE_2D)
 
+	surface = pyimage
+	textureData = pygame.image.tostring(surface, "RGBA", 1)
 	width = surface.get_width()
 	height = surface.get_height()
-
 	texture = glGenTextures(1)
 	glBindTexture(GL_TEXTURE_2D, texture)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-	GL_UNSIGNED_BYTE, textureData)
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData)
 
-	return texture, width, height
-# surface_to_texture
+	glBegin(GL_QUADS)
+	glColor3f(1, 1, 1)
+
+	glTexCoord2d(0, 0)
+	glVertex3f(-7.7, -7.7, 0)
+	glTexCoord2d(1, 0)
+	glVertex3f(7.7, -7.7, 0)
+	glTexCoord2d(1, 1)
+	glVertex3f(7.7, 7.7, 0)
+	glTexCoord2d(0, 1)
+	glVertex3f(-7.7, 7.7, 0)
+
+	glEnd()
+
+	glDisable(GL_TEXTURE_2D)
+# draw_surface
 
 artoolkit = ARToolKit()
 size = artoolkit.size
@@ -69,19 +83,25 @@ while running:
 			running = False
 	# for
 
+	glLoadIdentity()
+
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
 	artoolkit.update()
-
-	color = [1.0,0.,0.,1.]
-	glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
-	glutSolidSphere(2,20,20)
 
 	frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
 	image = cv.fromarray(frame)
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 
-	# screen.blit(pyimage, (0, 0))
+	draw_surface(pyimage)
+
+	if artoolkit.gl_matrix[0][0] > 0:
+		glMatrixMode(GL_MODELVIEW)
+		glLoadMatrixd(artoolkit.gl_matrix)
+	# if
+	color = [1.0, 0., 0., 1.]
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, color)
+	glutSolidSphere(2, 20, 20)
 
 	pygame.display.flip()
 # while
