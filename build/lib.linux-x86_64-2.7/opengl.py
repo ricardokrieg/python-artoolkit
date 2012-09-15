@@ -4,8 +4,10 @@ import cv
 import inspect
 import numpy
 from math import *
-from OpenGL.GL import *
+
+from OpenGL.GLUT import *
 from OpenGL.GLU import *
+from OpenGL.GL import *
 
 from artoolkit import *
 
@@ -19,6 +21,7 @@ def resize(width, height):
 # resize
 
 def init():
+	glutInit()
 	glEnable(GL_DEPTH_TEST)
 
 	glShadeModel(GL_FLAT)
@@ -29,6 +32,8 @@ def init():
 	glEnable(GL_LIGHTING)
 	glEnable(GL_LIGHT0)        
 	glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))
+
+	gluLookAt(0,0,10, 0,0,0, 0,1,0)
 # init
 
 def surface_to_texture(surface):
@@ -64,15 +69,19 @@ while running:
 			running = False
 	# for
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
 	artoolkit.update()
+
+	color = [1.0,0.,0.,1.]
+	glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
+	glutSolidSphere(2,20,20)
 
 	frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
 	image = cv.fromarray(frame)
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 
-	screen.blit(pyimage, (0, 0))
+	# screen.blit(pyimage, (0, 0))
 
 	pygame.display.flip()
 # while
