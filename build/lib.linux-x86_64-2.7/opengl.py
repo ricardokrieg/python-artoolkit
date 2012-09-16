@@ -11,29 +11,21 @@ from OpenGL.GL import *
 
 from artoolkit import *
 
-def resize(width, height):
-	glViewport(0, 0, width, height)
-	glMatrixMode(GL_PROJECTION)
-	glLoadIdentity()
-	gluPerspective(60.0, float(width)/height, .1, 1000.)
-	glMatrixMode(GL_MODELVIEW)
-	glLoadIdentity()
-# resize
-
 def init():
 	glutInit()
-	#glEnable(GL_DEPTH_TEST)
+	glEnable(GL_DEPTH_TEST)
 
-	#glShadeModel(GL_FLAT)
+	glShadeModel(GL_FLAT)
 	glClearColor(1.0, 1.0, 1.0, 0.0)
 
-	#glEnable(GL_COLOR_MATERIAL)
+	glEnable(GL_COLOR_MATERIAL)
 
-	#glEnable(GL_LIGHTING)
-	#glEnable(GL_LIGHT0)        
-	#glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))
+	glEnable(GL_LIGHTING)
+	glEnable(GL_LIGHT0)        
+	glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))
 
-	#gluLookAt(0,0,10, 0,0,0, 0,1,0)
+	gluPerspective(60, 1, 0.5, 500)
+	gluLookAt(0,0,100, 0,0,0, 0,1,0)
 # init
 
 def draw_surface(surface):
@@ -83,20 +75,22 @@ while running:
 
 	glClear(GL_COLOR_BUFFER_BIT)
 
-	artoolkit.update()
+	#artoolkit.update()
 
-	frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
-	image = cv.fromarray(frame)
-	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
+	#frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
+	#image = cv.fromarray(frame)
+	#pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 
-	draw_surface(pyimage)
+	#draw_surface(pyimage)
 
 	#if artoolkit.gl_matrix[0][0] > 0:
 	#	glMatrixMode(GL_MODELVIEW)
 	#	glLoadMatrixd(artoolkit.gl_matrix)
 	# if
-	#color = [1.0, 0., 0., 1.]
-	#glMaterialfv(GL_FRONT, GL_DIFFUSE, color)
+
+	#glMaterialfv(GL_FRONT, GL_DIFFUSE, [1.0, 0., 0., 1.])
+	glColor3f(0, 1, 0)
+	glutWireCube(50)
 	#glutSolidSphere(2, 20, 20)
 
 	pygame.display.flip()
