@@ -22,18 +22,18 @@ def resize(width, height):
 
 def init():
 	glutInit()
-	#glEnable(GL_DEPTH_TEST)
+	glEnable(GL_DEPTH_TEST)
 
-	#glShadeModel(GL_FLAT)
+	glShadeModel(GL_FLAT)
 	glClearColor(1.0, 1.0, 1.0, 0.0)
 
-	#glEnable(GL_COLOR_MATERIAL)
+	glEnable(GL_COLOR_MATERIAL)
 
-	#glEnable(GL_LIGHTING)
-	#glEnable(GL_LIGHT0)        
-	#glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))
+	glEnable(GL_LIGHTING)
+	glEnable(GL_LIGHT0)        
+	glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))
 
-	#gluLookAt(0,0,10, 0,0,0, 0,1,0)
+	gluLookAt(0,0,10, 0,0,0, 0,1,0)
 # init
 
 def draw_surface(surface):
@@ -50,14 +50,17 @@ def draw_surface(surface):
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData)
 
 	glBegin(GL_QUADS)
+	glColor3f(1, 1, 1)
+
 	glTexCoord2d(0, 0)
-	glVertex2f(-1, -1)
+	glVertex3f(-7.7, -7.7, 0)
 	glTexCoord2d(1, 0)
-	glVertex2f(1, -1)
+	glVertex3f(7.7, -7.7, 0)
 	glTexCoord2d(1, 1)
-	glVertex2f(1, 1)
+	glVertex3f(7.7, 7.7, 0)
 	glTexCoord2d(0, 1)
-	glVertex2f(-1, 1)
+	glVertex3f(-7.7, 7.7, 0)
+
 	glEnd()
 
 	glDisable(GL_TEXTURE_2D)
@@ -70,9 +73,8 @@ pygame.init()
 screen = pygame.display.set_mode(size, HWSURFACE|OPENGL|DOUBLEBUF)
 pygame.display.set_caption('ARToolKit')
 
-#resize(*size)
+resize(*size)
 init()
-#glViewport(0, 0, 640, 480)
 
 running = True
 while running:
@@ -81,7 +83,9 @@ while running:
 			running = False
 	# for
 
-	glClear(GL_COLOR_BUFFER_BIT)
+	glLoadIdentity()
+
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
 	artoolkit.update()
 
@@ -91,13 +95,13 @@ while running:
 
 	draw_surface(pyimage)
 
-	#if artoolkit.gl_matrix[0][0] > 0:
-	#	glMatrixMode(GL_MODELVIEW)
-	#	glLoadMatrixd(artoolkit.gl_matrix)
+	if artoolkit.gl_matrix[0][0] > 0:
+		glMatrixMode(GL_MODELVIEW)
+		glLoadMatrixd(artoolkit.gl_matrix)
 	# if
-	#color = [1.0, 0., 0., 1.]
-	#glMaterialfv(GL_FRONT, GL_DIFFUSE, color)
-	#glutSolidSphere(2, 20, 20)
+	color = [1.0, 0., 0., 1.]
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, color)
+	glutSolidSphere(2, 20, 20)
 
 	pygame.display.flip()
 # while
