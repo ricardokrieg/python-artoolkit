@@ -1,25 +1,47 @@
-INC_DIR= /opt/ARToolKit/include
-LIB_DIR= /opt/ARToolKit/lib
+ARTOOLKIT_INC_DIR = /opt/ARToolKit/include
+ARTOOLKIT_LIB_DIR = /opt/ARToolKit/lib
 
-LDFLAG=-pthread -lgstreamer-0.10 -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lxml2 -lglib-2.0 -L/usr/X11R6/lib -L/usr/local/lib -L$(LIB_DIR)
-LIBS= -lARgsub -lARvideo -lAR -lpthread -lglut -lGLU -lGL -lXi -lX11 -lm -pthread -lgstreamer-0.10 -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lxml2 -lglib-2.0
-CFLAG= -O -pthread -I/usr/include/gstreamer-0.10 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libxml2 -I/usr/X11R6/include -g -I$(INC_DIR) -I/usr/include/python2.7
+INC_DIR = -I$(ARTOOLKIT_INC_DIR)
+INC_DIR += -I/usr/include/gstreamer-0.10
+INC_DIR += -I/usr/include/glib-2.0
+INC_DIR += -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+INC_DIR += -I/usr/include/libxml2
+INC_DIR += -I/usr/X11R6/include
+INC_DIR += -I/usr/include/python2.7
 
-all: temp lib lib/artoolkitmodule.o
+LIB_DIR = -L$(ARTOOLKIT_LIB_DIR)
+LIB_DIR += -L/usr/X11R6/lib
+LIB_DIR += -L/usr/local/lib
 
-temp:
-	mkdir temp
+LDFLAGS = -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lxml2 -lglib-2.0 -lARgsub -lARvideo -lAR -lpthread -lglut -lGLU -lGL -lXi -lX11 -lm -lgstreamer-0.10 -lboost_python
+CPPFLAGS = -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -fPIC -O -pthread -g -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro
 
-lib:
-	mkdir lib
+SOURCE_FOLDER = src
+TEMP_FOLDER = temp
+LIB_FOLDER = lib
 
-lib/artoolkitmodule.o: temp/artoolkitmodule.o
-	g++ -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro temp/artoolkitmodule.o -lboost_python -o lib/artoolkit.so $(LDFLAG) $(LIBS)
+SOURCES = $(SOURCE_FOLDER)/artoolkitmodule.cpp
+TEMP_OBJECT = $(TEMP_FOLDER)/artoolkitmodule.o
+LIB_OBJECT = $(LIB_FOLDER)/artoolkit.so
 
-temp/artoolkitmodule.o: src/artoolkitmodule.cpp
-	gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -fPIC -I/usr/include/python2.7 -c $(CFLAG) src/artoolkitmodule.cpp -o temp/artoolkitmodule.o
+MKDIR = mkdir
+RM = rm
+
+all: $(TEMP_FOLDER) $(LIB_FOLDER) $(LIB_OBJECT)
+
+$(TEMP_FOLDER):
+	@$(MKDIR) $(TEMP_FOLDER)
+
+$(LIB_FOLDER):
+	@$(MKDIR) $(LIB_FOLDER)
+
+$(LIB_OBJECT): $(TEMP_OBJECT)
+	$(CXX) $(CPPFLAGS) $(LIB_DIR) $(TEMP_OBJECT) -o $(LIB_OBJECT) $(LDFLAGS)
+
+$(TEMP_OBJECT): $(SOURCES)
+	$(CXX) $(CPPFLAGS) $(INC_DIR) -c $(SOURCES) -o $(TEMP_OBJECT)
 
 clean:
-	rm -f *.o
-	rm -rf lib
-	rm -rf temp
+	$(warning Cleaning...)
+	@$(RM) -rf $(LIB_FOLDER)
+	@$(RM) -rf $(TEMP_FOLDER)
