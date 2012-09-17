@@ -5,23 +5,21 @@ LDFLAG=-pthread -lgstreamer-0.10 -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt 
 LIBS= -lARgsub -lARvideo -lAR -lpthread -lglut -lGLU -lGL -lXi -lX11 -lm -pthread -lgstreamer-0.10 -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lxml2 -lglib-2.0
 CFLAG= -O -pthread -I/usr/include/gstreamer-0.10 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libxml2 -I/usr/X11R6/include -g -I$(INC_DIR) -I/usr/include/python2.7
 
-all: build/temp.linux-x86_64-2.7 build/lib.linux-x86_64-2.7 build/lib.linux-x86_64-2.7/artoolkitmodule.o
+all: temp lib lib/artoolkitmodule.o
 
-build/temp.linux-x86_64-2.7:
-	mkdir -p build/temp.linux-x86_64-2.7
+temp:
+	mkdir temp
 
-build/lib.linux-x86_64-2.7:
-	mkdir -p build/lib.linux-x86_64-2.7
+lib:
+	mkdir lib
 
-build/lib.linux-x86_64-2.7/artoolkitmodule.o: build/temp.linux-x86_64-2.7/artoolkitmodule.o
-	g++ -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro build/temp.linux-x86_64-2.7/artoolkitmodule.o -lboost_python -o build/lib.linux-x86_64-2.7/artoolkit.so $(LDFLAG) $(LIBS)
+lib/artoolkitmodule.o: temp/artoolkitmodule.o
+	g++ -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro temp/artoolkitmodule.o -lboost_python -o lib/artoolkit.so $(LDFLAG) $(LIBS)
 
-build/temp.linux-x86_64-2.7/artoolkitmodule.o: artoolkitmodule.cpp
-	gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -fPIC -I/usr/include/python2.7 -c $(CFLAG) artoolkitmodule.cpp -o build/temp.linux-x86_64-2.7/artoolkitmodule.o
+temp/artoolkitmodule.o: src/artoolkitmodule.cpp
+	gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -fPIC -I/usr/include/python2.7 -c $(CFLAG) src/artoolkitmodule.cpp -o temp/artoolkitmodule.o
 
 clean:
 	rm -f *.o
-
-allclean:
-	rm -f *.o
-	rm -f Makefile
+	rm -rf lib
+	rm -rf temp
