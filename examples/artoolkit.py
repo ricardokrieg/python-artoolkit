@@ -63,6 +63,11 @@ glutInit()
 artoolkit = ARToolKit()
 size = artoolkit.size
 
+img = pygame.image.load('img/terra.jpg')
+textureData = pygame.image.tostring(img, "RGBA", 1)
+width = img.get_width()
+height = img.get_height()
+
 running = True
 while running:
 	for event in pygame.event.get():
@@ -88,9 +93,13 @@ while running:
 		light_position = [100.0,-200.0,200.0,0.0]
 		ambi = [0.1, 0.1, 0.1, 0.1]
 		light_zero_color = [0.9, 0.9, 0.9, 0.1]
-	    
-		glEnable(GL_DEPTH_TEST)
+
+		glPushMatrix()
+
+		glEnable(GL_TEXTURE_2D)
 		glEnable(GL_LIGHTING)
+		glEnable(GL_DEPTH_TEST)
+
 		glEnable(GL_LIGHT0)
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position)
 		glLightfv(GL_LIGHT0, GL_AMBIENT, ambi)
@@ -99,12 +108,26 @@ while running:
 		glMaterialfv(GL_FRONT, GL_SHININESS, flash_shiny)
 		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient)
 
-		glMatrixMode(GL_MODELVIEW)
-		glTranslatef( 0.0, 0.0, 25.0 )
-		glutSolidCube(50.0)
+		# glTranslatef(0.0, 0.0, 25.0)
+		# glutSolidCube(50.0)
+
+		texture = glGenTextures(1)
+		glBindTexture(GL_TEXTURE_2D, texture)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData)
+
+		glTranslatef(0.0, 0.0, 50.0)
+		quadric = gluNewQuadric()
+		gluQuadricNormals(quadric, GLU_SMOOTH)
+		gluQuadricTexture(quadric, True)
+		gluSphere(quadric, 50, 36, 18)
 
 		glDisable(GL_DEPTH_TEST)
 		glDisable(GL_LIGHTING)
+		glDisable(GL_TEXTURE_2D)
+
+		glPopMatrix()
 	# if
 
 	pygame.display.flip()
