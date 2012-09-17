@@ -82,6 +82,7 @@ while running:
 
 	artoolkit.update()
 	gl_matrix = artoolkit.gl_matrix
+	gl_cpara = artoolkit.gl_cpara
 
 	glClear(GL_COLOR_BUFFER_BIT)
 	glColor3f(1, 1, 1)
@@ -91,15 +92,20 @@ while running:
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 	draw_surface(pyimage)
 
-	glPushMatrix()
+	glMatrixMode(GL_MODELVIEW)
+	glLoadIdentity()
+
+	glMatrixMode(GL_PROJECTION)
+	glLoadMatrixd(gl_cpara)
+
+	glClear(GL_DEPTH_BUFFER_BIT)
+
+	glClearDepth(1.0)
 	glMatrixMode(GL_MODELVIEW)
 	glColor3f(1, 0, 0)
-	gl_matrix[14] = gl_matrix[14]*(-1)
-	gl_matrix[14] += 500
 	glLoadMatrixd(gl_matrix)
-	# glLoadMatrixd([1, 0, 0, 0, -0, -1, 0, 0, 0, -0, -1, 0, 8, 31, -300, 1])
-	glutWireTeapot(30)
-	glPopMatrix()
+	glTranslatef( 0.0, 0.0, 25.0 )
+	glutSolidCube(30)
 
 	pygame.display.flip()
 # while

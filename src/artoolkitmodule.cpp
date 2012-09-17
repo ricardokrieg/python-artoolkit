@@ -34,6 +34,13 @@ class ARToolKit {
                 exit(0);
             }
 
+            static ARParam  gCparam;
+            gCparam = cparam;
+            for (int i = 0; i < 4; ++i) {
+                gCparam.mat[1][i] = (gCparam.ysize-1)*(gCparam.mat[2][i]) - gCparam.mat[1][i];
+            }
+            argConvGLcpara( &gCparam, AR_GL_CLIP_NEAR, AR_GL_CLIP_FAR, this->gl_cpara );
+
             arVideoCapStart();
 
             this->count = 0;
@@ -109,6 +116,15 @@ class ARToolKit {
             return ret;
         }
 
+        BP::list get_gl_cpara(void) {
+            BP::list ret;
+            for (int i=0; i < 16; ++i) {
+                ret.append(this->gl_cpara[i]);
+            }
+
+            return ret;
+        }
+
         BP::list get_frame(void) {
             BP::list ret;
 
@@ -127,7 +143,7 @@ class ARToolKit {
         static const double patt_width = 80.0;
         double patt_center[2];
         double patt_trans[3][4];
-        double gl_para[16];
+        double gl_para[16], gl_cpara[16];
         ARUint8 *dataPtr;
 };
 
@@ -142,6 +158,7 @@ BOOST_PYTHON_MODULE(artoolkit) {
         .add_property("pos", &ARToolKit::get_pos)
         .add_property("matrix", &ARToolKit::get_matrix)
         .add_property("gl_matrix", &ARToolKit::get_gl_matrix)
+        .add_property("gl_cpara", &ARToolKit::get_gl_cpara)
         .add_property("frame", &ARToolKit::get_frame);
     ;
 }
