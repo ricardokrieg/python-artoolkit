@@ -100,13 +100,11 @@ class ARToolKit {
             return ret;
         }
 
-        BP::tuple get_gl_matrix(void) {
-            BP::tuple ret_0 = BP::make_tuple(this->gl_para[0], this->gl_para[4], this->gl_para[8], this->gl_para[12]);
-            BP::tuple ret_1 = BP::make_tuple(this->gl_para[1], this->gl_para[5], this->gl_para[9], this->gl_para[13]);
-            BP::tuple ret_2 = BP::make_tuple(this->gl_para[2], this->gl_para[6], this->gl_para[10], this->gl_para[14]);
-            BP::tuple ret_3 = BP::make_tuple(this->gl_para[3], this->gl_para[7], this->gl_para[11], this->gl_para[15]);
-
-            BP::tuple ret = BP::make_tuple(ret_0, ret_1, ret_2, ret_3);
+        BP::list get_gl_matrix(void) {
+            BP::list ret;
+            for (int i=0; i < 16; ++i) {
+                ret.append(this->gl_para[i]);
+            }
 
             return ret;
         }
