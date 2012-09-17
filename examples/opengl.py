@@ -13,16 +13,6 @@ from OpenGL.GL import *
 
 from artoolkit import *
 
-def init():
-	glutInit()
-	glMatrixMode(GL_PROJECTION)
-	glLoadIdentity()
-	gluPerspective(100, 1, 0.5, 500)
-	glMatrixMode(GL_MODELVIEW)
-	glLoadIdentity()
-	gluLookAt(0, 0, 100, 0, 0, 0, 0, 1, 0)
-# init
-
 def draw_surface(surface):
 	glMatrixMode(GL_PROJECTION)
 	glPushMatrix()
@@ -65,14 +55,13 @@ def draw_surface(surface):
 	glMatrixMode(GL_MODELVIEW)
 # draw_surface
 
+pygame.init()
+screen = pygame.display.set_mode((640, 480), HWSURFACE|OPENGL|DOUBLEBUF)
+pygame.display.set_caption('ARToolKit')
+glutInit()
+
 artoolkit = ARToolKit()
 size = artoolkit.size
-
-pygame.init()
-screen = pygame.display.set_mode(size, HWSURFACE|OPENGL|DOUBLEBUF)
-pygame.display.set_caption('ARToolKit')
-
-init()
 
 running = True
 while running:
@@ -81,8 +70,6 @@ while running:
 	# for
 
 	artoolkit.update()
-	gl_matrix = artoolkit.gl_matrix
-	gl_cpara = artoolkit.gl_cpara
 
 	glClear(GL_COLOR_BUFFER_BIT)
 	glColor3f(1, 1, 1)
@@ -90,22 +77,14 @@ while running:
 	frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
 	image = cv.fromarray(frame)
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
-	draw_surface(pyimage)
+	
+	artoolkit.draw_surface(pyimage)
 
-	glMatrixMode(GL_MODELVIEW)
-	glLoadIdentity()
+	artoolkit.draw3d()
 
-	glMatrixMode(GL_PROJECTION)
-	glLoadMatrixd(gl_cpara)
-
-	glClear(GL_DEPTH_BUFFER_BIT)
-
-	glClearDepth(1.0)
-	glMatrixMode(GL_MODELVIEW)
 	glColor3f(1, 0, 0)
-	glLoadMatrixd(gl_matrix)
 	glTranslatef( 0.0, 0.0, 25.0 )
-	glutSolidCube(30)
+	glutSolidTeapot(30)
 
 	pygame.display.flip()
 # while

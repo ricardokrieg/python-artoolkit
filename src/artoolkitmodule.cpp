@@ -1,5 +1,8 @@
 #include <boost/python.hpp>
 
+#include <GL/glut.h>
+#include <GL/glext.h>
+
 #include <AR/gsub.h>
 #include <AR/video.h>
 #include <AR/param.h>
@@ -46,6 +49,17 @@ class ARToolKit {
             this->count = 0;
             this->patt_center[0] = 0.0;
             this->patt_center[1] = 0.0;
+
+            this->init();
+        }
+
+        void init() {
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(100, 1, 0.5, 500);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            gluLookAt(0, 0, 100, 0, 0, 0, 0, 1, 0);
         }
 
         void update() {
@@ -78,6 +92,20 @@ class ARToolKit {
 
             arGetTransMat(&marker_info[k], this->patt_center, this->patt_width, this->patt_trans);
             argConvGlpara(this->patt_trans, this->gl_para);
+        }
+
+        void draw3d(void) {
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadMatrixd(this->gl_cpara);
+
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glClearDepth(1.0);
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadMatrixd(this->gl_para);
         }
 
         void close(void) {
@@ -116,15 +144,6 @@ class ARToolKit {
             return ret;
         }
 
-        BP::list get_gl_cpara(void) {
-            BP::list ret;
-            for (int i=0; i < 16; ++i) {
-                ret.append(this->gl_cpara[i]);
-            }
-
-            return ret;
-        }
-
         BP::list get_frame(void) {
             BP::list ret;
 
@@ -152,13 +171,12 @@ BOOST_PYTHON_MODULE(artoolkit) {
 
     class_<ARToolKit>("ARToolKit", init<>())
         .def("update", &ARToolKit::update)
+        .def("draw3d", &ARToolKit::draw3d)
         .def("close", &ARToolKit::close)
 
         .add_property("size", &ARToolKit::get_size)
         .add_property("pos", &ARToolKit::get_pos)
         .add_property("matrix", &ARToolKit::get_matrix)
-        .add_property("gl_matrix", &ARToolKit::get_gl_matrix)
-        .add_property("gl_cpara", &ARToolKit::get_gl_cpara)
         .add_property("frame", &ARToolKit::get_frame);
     ;
 }
