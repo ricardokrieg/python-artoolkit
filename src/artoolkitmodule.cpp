@@ -94,6 +94,11 @@ class ARToolKit {
             argConvGlpara(this->patt_trans, this->gl_para);
         }
 
+        void draw2d() {
+            argDrawMode2D();
+            argDispImage(this->dataPtr, 0, 0);
+        }
+
         void draw3d(void) {
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
@@ -171,6 +176,7 @@ BOOST_PYTHON_MODULE(artoolkit) {
 
     class_<ARToolKit>("ARToolKit", init<>())
         .def("update", &ARToolKit::update)
+        .def("draw2d", &ARToolKit::draw2d)
         .def("draw3d", &ARToolKit::draw3d)
         .def("close", &ARToolKit::close)
 

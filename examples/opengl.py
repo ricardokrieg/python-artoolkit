@@ -74,12 +74,11 @@ while running:
 	glClear(GL_COLOR_BUFFER_BIT)
 	glColor3f(1, 1, 1)
 	
-	frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
-	image = cv.fromarray(frame)
-	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
-	
-	artoolkit.draw_surface(pyimage)
+	# frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
+	# image = cv.fromarray(frame)
+	# pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 
+	# artoolkit.draw2d()
 	artoolkit.draw3d()
 
 	glColor3f(1, 0, 0)
