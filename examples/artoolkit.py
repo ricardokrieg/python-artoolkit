@@ -63,7 +63,7 @@ glutInit()
 artoolkit = ARToolKit()
 size = artoolkit.size
 
-img = pygame.image.load('img/terra.jpg')
+img = pygame.image.load('img/saturno.jpg')
 textureData = pygame.image.tostring(img, "RGBA", 1)
 width = img.get_width()
 height = img.get_height()
