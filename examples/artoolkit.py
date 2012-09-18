@@ -12,6 +12,7 @@ from OpenGL.GLU import *
 from OpenGL.GL import *
 
 from artoolkit import *
+from planet import Planet
 
 def draw_surface(surface):
 	glMatrixMode(GL_PROJECTION)
@@ -61,14 +62,10 @@ pygame.display.set_caption('ARToolKit')
 glutInit()
 
 ARToolKit.init()
+size = (640, 480)
 
-artoolkit = ARToolKit('Data/patt.hiro')
-size = artoolkit.size
-
-img = pygame.image.load('img/saturno.jpg')
-textureData = pygame.image.tostring(img, "RGBA", 1)
-width = img.get_width()
-height = img.get_height()
+earth = Planet('img/terra.jpg', 'Data/patt.hiro')
+moon = Planet('img/lua.jpg', 'Data/patt.sample1')
 
 running = True
 while running:
@@ -76,62 +73,28 @@ while running:
 		if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: running = False
 	# for
 
-	artoolkit.update()
+	ARToolKit.next_frame()
 
 	glClear(GL_COLOR_BUFFER_BIT)
 	glColor3f(1, 1, 1)
 	
-	frame = numpy.asarray(artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
+	frame = numpy.asarray(earth.artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
 	image = cv.fromarray(frame)
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 	draw_surface(pyimage)
 
 	ARToolKit.load_projection_matrix()
 
-	if artoolkit.visible:
-		artoolkit.load_matrix()
+	earth.artoolkit.update()
+	if earth.artoolkit.visible:
+		earth.artoolkit.load_matrix()
+		earth.draw()
+	# if
 
-		ambient = [0.0, 0.0, 1.0, 1.0]
-		flash = [0.0, 0.0, 1.0, 1.0]
-		flash_shiny = [50.0]
-		light_position = [100.0,-200.0,200.0,0.0]
-		ambi = [0.1, 0.1, 0.1, 0.1]
-		light_zero_color = [0.9, 0.9, 0.9, 0.1]
-
-		glPushMatrix()
-
-		glEnable(GL_TEXTURE_2D)
-		glEnable(GL_LIGHTING)
-		glEnable(GL_DEPTH_TEST)
-
-		glEnable(GL_LIGHT0)
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-		glLightfv(GL_LIGHT0, GL_AMBIENT, ambi)
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_zero_color)
-		glMaterialfv(GL_FRONT, GL_SPECULAR, flash)
-		glMaterialfv(GL_FRONT, GL_SHININESS, flash_shiny)
-		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient)
-
-		# glTranslatef(0.0, 0.0, 25.0)
-		# glutSolidCube(50.0)
-
-		texture = glGenTextures(1)
-		glBindTexture(GL_TEXTURE_2D, texture)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData)
-
-		glTranslatef(0.0, 0.0, 50.0)
-		quadric = gluNewQuadric()
-		gluQuadricNormals(quadric, GLU_SMOOTH)
-		gluQuadricTexture(quadric, True)
-		gluSphere(quadric, 50, 36, 18)
-
-		glDisable(GL_DEPTH_TEST)
-		glDisable(GL_LIGHTING)
-		glDisable(GL_TEXTURE_2D)
-
-		glPopMatrix()
+	moon.artoolkit.update()
+	if moon.artoolkit.visible:
+		moon.artoolkit.load_matrix()
+		moon.draw()
 	# if
 
 	pygame.display.flip()

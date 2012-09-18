@@ -65,15 +65,19 @@ class ARToolKit {
             gluLookAt(0, 0, 100, 0, 0, 0, 0, 1, 0);
         }
 
-        void update() {
-            ARMarkerInfo *marker_info;
-            int marker_num;
-            int j, k;
-
+        static void next_frame(void) {
             if ((dataPtr = (ARUint8 *)arVideoGetImage()) == NULL) {
                 arUtilSleep(2);
                 return;
             }
+            
+            arVideoCapNext();
+        }
+
+        void update(void) {
+            ARMarkerInfo *marker_info;
+            int marker_num;
+
             if (this->count == 0) arUtilTimerReset();
             this->count++;
 
@@ -82,22 +86,21 @@ class ARToolKit {
                 exit(0);
             }
 
-            arVideoCapNext();
-
-            k = -1;
             this->visible = true;
-            for (j = 0; j < marker_num; j++) {
+            int k = -1;
+            for (int j = 0; j < marker_num; j++) {
                 if (this->patt_id == marker_info[j].id) {
                     if (k == -1) k = j;
                     else if (marker_info[k].cf < marker_info[j].cf) k = j;
                 }
             }
+
             if (k == -1) {
                 this->visible = false;
                 return;
             }
 
-            arGetTransMat(&marker_info[k], this->patt_center, this->patt_width, this->patt_trans);
+            arGetTransMat(&marker_info[this->patt_id], this->patt_center, this->patt_width, this->patt_trans);
             argConvGlpara(this->patt_trans, this->gl_para);
         }
 
@@ -159,6 +162,7 @@ BOOST_PYTHON_MODULE(artoolkit) {
 
     class_<ARToolKit>("ARToolKit", init<const std::string>())
         .def("init", &ARToolKit::init).staticmethod("init")
+        .def("next_frame", &ARToolKit::next_frame).staticmethod("next_frame")
         .def("update", &ARToolKit::update)
         .def("load_projection_matrix", &ARToolKit::load_projection_matrix).staticmethod("load_projection_matrix")
         .def("load_matrix", &ARToolKit::load_matrix)
