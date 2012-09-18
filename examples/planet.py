@@ -6,11 +6,12 @@ from OpenGL.GL import *
 from artoolkit import *
 
 class Planet:
-	def __init__(self, image, pattern):
+	def __init__(self, image, pattern, radius):
 		image = pygame.image.load(image)
 		self.texture_data = pygame.image.tostring(image, "RGBA", 1)
 		self.width = image.get_width()
 		self.height = image.get_height()
+		self.radius = radius
 
 		self.artoolkit = ARToolKit(pattern)
 	# __init__
@@ -47,7 +48,7 @@ class Planet:
 		quadric = gluNewQuadric()
 		gluQuadricNormals(quadric, GLU_SMOOTH)
 		gluQuadricTexture(quadric, True)
-		gluSphere(quadric, 50, 36, 18)
+		gluSphere(quadric, self.radius, 36, 18)
 
 		glDisable(GL_DEPTH_TEST)
 		glDisable(GL_LIGHTING)

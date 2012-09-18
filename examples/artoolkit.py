@@ -64,8 +64,10 @@ glutInit()
 ARToolKit.init()
 size = (640, 480)
 
-earth = Planet('img/terra.jpg', 'Data/patt.hiro')
-moon = Planet('img/lua.jpg', 'Data/patt.sample1')
+planets = []
+
+planets.append(Planet('img/terra.jpg', 'Data/patt.hiro', 50))
+planets.append(Planet('img/venus.jpg', 'Data/patt.sample1', 30))
 
 running = True
 while running:
@@ -78,24 +80,20 @@ while running:
 	glClear(GL_COLOR_BUFFER_BIT)
 	glColor3f(1, 1, 1)
 	
-	frame = numpy.asarray(earth.artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
+	frame = numpy.asarray(planets[0].artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
 	image = cv.fromarray(frame)
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 	draw_surface(pyimage)
 
 	ARToolKit.load_projection_matrix()
 
-	earth.artoolkit.update()
-	if earth.artoolkit.visible:
-		earth.artoolkit.load_matrix()
-		earth.draw()
-	# if
-
-	moon.artoolkit.update()
-	if moon.artoolkit.visible:
-		moon.artoolkit.load_matrix()
-		moon.draw()
-	# if
+	for planet in planets:
+		planet.artoolkit.update()
+		if planet.artoolkit.visible:
+			planet.artoolkit.load_matrix()
+			planet.draw()
+		# if
+	# for
 
 	pygame.display.flip()
 # while
