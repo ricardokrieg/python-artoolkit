@@ -60,7 +60,9 @@ screen = pygame.display.set_mode((640, 480), HWSURFACE|OPENGL|DOUBLEBUF)
 pygame.display.set_caption('ARToolKit')
 glutInit()
 
-artoolkit = ARToolKit()
+ARToolKit.init()
+
+artoolkit = ARToolKit('Data/patt.hiro')
 size = artoolkit.size
 
 img = pygame.image.load('img/saturno.jpg')
@@ -84,8 +86,10 @@ while running:
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 	draw_surface(pyimage)
 
+	ARToolKit.load_projection_matrix()
+
 	if artoolkit.visible:
-		artoolkit.draw3d()
+		artoolkit.load_matrix()
 
 		ambient = [0.0, 0.0, 1.0, 1.0]
 		flash = [0.0, 0.0, 1.0, 1.0]
@@ -133,4 +137,4 @@ while running:
 	pygame.display.flip()
 # while
 
-artoolkit.close()
+ARToolKit.close()

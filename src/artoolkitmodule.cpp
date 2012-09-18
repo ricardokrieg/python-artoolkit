@@ -10,14 +10,31 @@
 
 namespace BP = boost::python;
 
+int xsize, ysize;
+double gl_cpara[16];
+ARUint8 *dataPtr;
+
 class ARToolKit {
     public:
-        ARToolKit(void) {
+        ARToolKit(const std::string patt_name = "Data/patt.hiro") {
+            if ((this->patt_id=arLoadPatt(patt_name.c_str())) < 0) {
+                printf("pattern load error !!\n");
+                exit(0);
+            }
+
+            this->count = 0;
+            this->patt_center[0] = 0.0;
+            this->patt_center[1] = 0.0;
+            this->visible = false;
+            this->thresh = 100;
+            this->patt_width = 80.0;
+        }
+
+        static void init(void) {
             char vconf[] = "v4l2src device=/dev/video0 ! video/x-raw-yuv,width=640,height=480 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
-            // char vconf[] = "v4l2src device=/dev/video0 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
             if (arVideoOpen( vconf ) < 0) exit(0);
 
-            if (arVideoInqSize(&this->xsize, &this->ysize) < 0) exit(0);
+            if (arVideoInqSize(&xsize, &ysize) < 0) exit(0);
 
             char cparam_name[] = "Data/camera_para.dat";
             ARParam wparam, cparam;
@@ -26,30 +43,19 @@ class ARToolKit {
                 exit(0);
             }
 
-            arParamChangeSize(&wparam, this->xsize, this->ysize, &cparam);
+            arParamChangeSize(&wparam, xsize, ysize, &cparam);
             arInitCparam(&cparam);
             printf("*** Camera Parameter ***\n");
             arParamDisp(&cparam);
-
-            char patt_name[] = "Data/patt.hiro";
-            if ((this->patt_id=arLoadPatt(patt_name)) < 0) {
-                printf("pattern load error !!\n");
-                exit(0);
-            }
 
             static ARParam  gCparam;
             gCparam = cparam;
             for (int i = 0; i < 4; ++i) {
                 gCparam.mat[1][i] = (gCparam.ysize-1)*(gCparam.mat[2][i]) - gCparam.mat[1][i];
             }
-            argConvGLcpara( &gCparam, AR_GL_CLIP_NEAR, AR_GL_CLIP_FAR, this->gl_cpara );
+            argConvGLcpara( &gCparam, AR_GL_CLIP_NEAR, AR_GL_CLIP_FAR, gl_cpara );
 
             arVideoCapStart();
-
-            this->count = 0;
-            this->patt_center[0] = 0.0;
-            this->patt_center[1] = 0.0;
-            this->visible = false;
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
@@ -64,14 +70,14 @@ class ARToolKit {
             int marker_num;
             int j, k;
 
-            if ((this->dataPtr = (ARUint8 *)arVideoGetImage()) == NULL) {
+            if ((dataPtr = (ARUint8 *)arVideoGetImage()) == NULL) {
                 arUtilSleep(2);
                 return;
             }
-            if (count == 0) arUtilTimerReset();
-            count++;
+            if (this->count == 0) arUtilTimerReset();
+            this->count++;
 
-            if (arDetectMarker(this->dataPtr, this->thresh, &marker_info, &marker_num) < 0) {
+            if (arDetectMarker(dataPtr, this->thresh, &marker_info, &marker_num) < 0) {
                 this->close();
                 exit(0);
             }
@@ -95,28 +101,30 @@ class ARToolKit {
             argConvGlpara(this->patt_trans, this->gl_para);
         }
 
-        void draw3d(void) {
+        static void load_projection_matrix(void) {
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
 
             glMatrixMode(GL_PROJECTION);
-            glLoadMatrixd(this->gl_cpara);
+            glLoadMatrixd(gl_cpara);
 
             glClearDepth( 1.0 );
             glClear(GL_DEPTH_BUFFER_BIT);
             glDepthFunc(GL_LEQUAL);
+        }
 
+        void load_matrix(void) {
             glMatrixMode(GL_MODELVIEW);
             glLoadMatrixd(this->gl_para);
         }
 
-        void close(void) {
+        static void close(void) {
             arVideoCapStop();
             arVideoClose();
         }
 
         BP::tuple get_size(void) {
-            BP::tuple ret = BP::make_tuple(this->xsize, this->ysize);
+            BP::tuple ret = BP::make_tuple(xsize, ysize);
 
             return ret;
         }
@@ -124,37 +132,37 @@ class ARToolKit {
         BP::list get_frame(void) {
             BP::list ret;
 
-            for (unsigned int i=0; i<(this->xsize*this->ysize*3); i++) {
-                ret.append(this->dataPtr[i]);
+            for (unsigned int i=0; i<(xsize*ysize*3); i++) {
+                ret.append(dataPtr[i]);
             }
 
             return ret;
         }
 
         bool is_visible(void) {
-            return this->visible;
+            return visible;
         }
 
     private:
-        int xsize, ysize;
         int patt_id;
-        int count;
-        static const int thresh = 100;
-        static const double patt_width = 80.0;
+        int thresh;
+        double patt_width;
         double patt_center[2];
         double patt_trans[3][4];
-        double gl_para[16], gl_cpara[16];
-        ARUint8 *dataPtr;
         bool visible;
+        double gl_para[16];
+        int count;
 };
 
 BOOST_PYTHON_MODULE(artoolkit) {
     using namespace boost::python;
 
-    class_<ARToolKit>("ARToolKit", init<>())
+    class_<ARToolKit>("ARToolKit", init<const std::string>())
+        .def("init", &ARToolKit::init).staticmethod("init")
         .def("update", &ARToolKit::update)
-        .def("draw3d", &ARToolKit::draw3d)
-        .def("close", &ARToolKit::close)
+        .def("load_projection_matrix", &ARToolKit::load_projection_matrix).staticmethod("load_projection_matrix")
+        .def("load_matrix", &ARToolKit::load_matrix)
+        .def("close", &ARToolKit::close).staticmethod("close")
 
         .add_property("size", &ARToolKit::get_size)
         .add_property("frame", &ARToolKit::get_frame)
