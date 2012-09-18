@@ -14,7 +14,14 @@ class Planet:
 		self.radius = radius
 
 		self.artoolkit = ARToolKit(pattern)
+		self.rotation = 0
 	# __init__
+
+	def update(self):
+		self.rotation += 150/self.radius
+
+		if self.rotation >= 360: self.rotation = 0
+	# update
 
 	def draw(self):
 		ambient = [0.0, 0.0, 1.0, 1.0]
@@ -29,6 +36,7 @@ class Planet:
 		glEnable(GL_TEXTURE_2D)
 		glEnable(GL_LIGHTING)
 		glEnable(GL_DEPTH_TEST)
+
 
 		glEnable(GL_LIGHT0)
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position)
@@ -45,6 +53,8 @@ class Planet:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.width, self.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, self.texture_data)
 
 		glTranslatef(0.0, 0.0, 50.0)
+		glRotatef(self.rotation, 0, 0, 1)
+
 		quadric = gluNewQuadric()
 		gluQuadricNormals(quadric, GLU_SMOOTH)
 		gluQuadricTexture(quadric, True)

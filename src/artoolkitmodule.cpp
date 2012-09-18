@@ -93,7 +93,7 @@ BP::list artoolkit_frame(void) {
 
 class ARToolKit {
     public:
-        ARToolKit(const std::string patt_name = "Data/patt.hiro") {
+        ARToolKit(const std::string patt_name) {
             if ((this->patt_id=arLoadPatt(patt_name.c_str())) < 0) {
                 printf("pattern load error !!\n");
                 exit(0);
@@ -133,7 +133,7 @@ class ARToolKit {
                 return;
             }
 
-            arGetTransMat(&marker_info[this->patt_id], this->patt_center, this->patt_width, this->patt_trans);
+            arGetTransMat(&marker_info[k], this->patt_center, this->patt_width, this->patt_trans);
             argConvGlpara(this->patt_trans, this->gl_para);
         }
 

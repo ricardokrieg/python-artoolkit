@@ -66,8 +66,9 @@ size = artoolkit_size()
 
 planets = []
 
-planets.append(Planet('img/terra.jpg', 'Data/patt.hiro', 50))
-planets.append(Planet('img/venus.jpg', 'Data/patt.sample1', 30))
+planets.append(Planet('img/terra.jpg', 'Data/patt.hiro', 30))
+planets.append(Planet('img/venus.jpg', 'Data/patt.sample1', 25))
+planets.append(Planet('img/jupiter.jpg', 'Data/patt.x', 50))
 
 running = True
 while running:
@@ -88,6 +89,8 @@ while running:
 	load_projection_matrix()
 
 	for planet in planets:
+		planet.update()
+
 		planet.artoolkit.update()
 		if planet.artoolkit.visible:
 			planet.artoolkit.load_matrix()
