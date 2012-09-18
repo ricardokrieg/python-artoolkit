@@ -2,32 +2,28 @@ import pygame
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
+from math import *
 
-from artoolkit import *
-
-class Planet:
-	def __init__(self, image, pattern, radius):
+class Moon:
+	def __init__(self, image):
 		image = pygame.image.load(image)
 		self.texture_data = pygame.image.tostring(image, "RGBA", 1)
 		self.width = image.get_width()
 		self.height = image.get_height()
-		self.radius = radius
-		self.radius = 50
 
-		self.artoolkit = ARToolKit(pattern)
+		self.radius = 5
 		self.rotation = 0
+		self.translation = 0
 
-		self.moons = []
+		self.parent_radius = 50*1.5
 	# __init__
 
 	def update(self):
 		self.rotation += 150/self.radius
+		self.translation += 0.1
 
 		if self.rotation >= 360: self.rotation = 0
-
-		for moon in self.moons:
-			moon.update()
-		# for
+		if self.translation >= 360: self.translation = 0
 	# update
 
 	def draw(self):
@@ -58,7 +54,8 @@ class Planet:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.width, self.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, self.texture_data)
 
-		glTranslatef(0.0, 0.0, 50.0)
+		glTranslatef(0, 0, self.parent_radius)
+		glTranslatef(self.parent_radius*sin(self.translation), self.parent_radius*cos(self.translation), 0)
 		glRotatef(self.rotation, 0, 0, 1)
 
 		quadric = gluNewQuadric()
@@ -71,13 +68,5 @@ class Planet:
 		glDisable(GL_TEXTURE_2D)
 
 		glPopMatrix()
-
-		for moon in self.moons:
-			moon.draw()
-		# for
 	# draw
-
-	def add_moon(self, moon):
-		self.moons.append(moon)
-	# add_moon
-# Planet
+# Moon

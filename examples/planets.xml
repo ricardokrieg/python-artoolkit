@@ -1,4 +1,6 @@
 <planets>
-	<planet texture='terra.jpg' pattern='patt.terra' radius='30' />
+	<planet texture='terra.jpg' pattern='patt.terra' radius='30'>
+		<moon texture='lua.jpg' />
+	</planet>
 	<planet texture='jupiter.jpg' pattern='patt.jupiter' radius='60' />
 </planets>

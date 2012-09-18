@@ -14,6 +14,7 @@ from OpenGL.GL import *
 
 from artoolkit import *
 from planet import Planet
+from moon import Moon
 
 def draw_surface(surface):
 	glMatrixMode(GL_PROJECTION)
@@ -69,12 +70,21 @@ planets = []
 
 dom = parse('planets.xml')
 xmlplanets = dom.getElementsByTagName('planet')
-for planet in xmlplanets:
-	texture = "img/%s" % planet.getAttribute('texture')
-	pattern = "Data/%s" % planet.getAttribute('pattern')
-	radius = int(planet.getAttribute('radius'))
+for xmlplanet in xmlplanets:
+	texture = "img/%s" % xmlplanet.getAttribute('texture')
+	pattern = "Data/%s" % xmlplanet.getAttribute('pattern')
+	radius = int(xmlplanet.getAttribute('radius'))
 
-	planets.append(Planet(texture, str(pattern), radius))
+	planet = Planet(texture, str(pattern), radius)
+
+	for moon in xmlplanet.childNodes:
+		if moon.__class__.__name__ == 'Element':
+			moon_texture = "img/%s" % moon.getAttribute('texture')
+			planet.add_moon(Moon(moon_texture))
+		# if
+	# for
+
+	planets.append(planet)
 # for
 
 running = True
