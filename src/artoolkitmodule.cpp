@@ -15,7 +15,7 @@ double gl_cpara[16];
 ARUint8 *dataPtr;
 
 void artoolkit_init(void) {
-    char vconf[] = "v4l2src device=/dev/video1 ! video/x-raw-yuv,width=1280,height=720 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
+    char vconf[] = "v4l2src device=/dev/video0 ! video/x-raw-yuv,width=640,height=480 ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink";
     if (arVideoOpen( vconf ) < 0) exit(0);
 
     if (arVideoInqSize(&xsize, &ysize) < 0) exit(0);

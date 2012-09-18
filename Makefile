@@ -19,6 +19,7 @@ CPPFLAGS = -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -fPIC -O -pthread 
 SOURCE_FOLDER = src
 TEMP_FOLDER = temp
 LIB_FOLDER = lib
+SYSTEM_LIB_FOLDER = /usr/lib/pymodules/python2.7/
 
 SOURCES = $(SOURCE_FOLDER)/artoolkitmodule.cpp
 TEMP_OBJECT = $(TEMP_FOLDER)/artoolkitmodule.o
@@ -26,6 +27,7 @@ LIB_OBJECT = $(LIB_FOLDER)/artoolkit.so
 
 MKDIR = mkdir
 RM = rm
+CP = cp
 
 all: $(TEMP_FOLDER) $(LIB_FOLDER) $(LIB_OBJECT)
 
@@ -40,6 +42,9 @@ $(LIB_OBJECT): $(TEMP_OBJECT)
 
 $(TEMP_OBJECT): $(SOURCES)
 	$(CXX) $(CPPFLAGS) $(INC_DIR) -c $(SOURCES) -o $(TEMP_OBJECT)
+
+install: $(LIB_OBJECT)
+	@$(CP) $(LIB_OBJECT) $(SYSTEM_LIB_FOLDER)
 
 clean:
 	$(warning Cleaning...)
