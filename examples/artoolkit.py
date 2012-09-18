@@ -6,6 +6,7 @@ import cv
 import inspect
 import numpy
 from math import *
+from xml.dom.minidom import *
 
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
@@ -66,11 +67,15 @@ glutInit()
 
 planets = []
 
-planets.append(Planet('img/terra.jpg', 'Data/patt.terra', 30))
-planets.append(Planet('img/jupiter.jpg', 'Data/patt.jupiter', 50))
-planets.append(Planet('img/marte.jpg', 'Data/patt.x', 25))
-planets.append(Planet('img/venus.jpg', 'Data/patt.hiro', 20))
-planets.append(Planet('img/sol.jpg', 'Data/patt.sample1', 80))
+dom = parse('planets.xml')
+xmlplanets = dom.getElementsByTagName('planet')
+for planet in xmlplanets:
+	texture = "img/%s" % planet.getAttribute('texture')
+	pattern = "Data/%s" % planet.getAttribute('pattern')
+	radius = int(planet.getAttribute('radius'))
+
+	planets.append(Planet(texture, str(pattern), radius))
+# for
 
 running = True
 while running:
