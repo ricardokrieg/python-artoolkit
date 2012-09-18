@@ -56,19 +56,21 @@ def draw_surface(surface):
 	glMatrixMode(GL_MODELVIEW)
 # draw_surface
 
-pygame.init()
-screen = pygame.display.set_mode((640, 480), HWSURFACE|OPENGL|DOUBLEBUF)
-pygame.display.set_caption('ARToolKit')
-glutInit()
-
 artoolkit_init()
 size = artoolkit_size()
 
+pygame.init()
+screen = pygame.display.set_mode(size, HWSURFACE|OPENGL|DOUBLEBUF)
+pygame.display.set_caption('ARToolKit')
+glutInit()
+
 planets = []
 
-planets.append(Planet('img/terra.jpg', 'Data/patt.hiro', 30))
-planets.append(Planet('img/venus.jpg', 'Data/patt.sample1', 25))
-planets.append(Planet('img/jupiter.jpg', 'Data/patt.x', 50))
+planets.append(Planet('img/terra.jpg', 'Data/patt.terra', 30))
+planets.append(Planet('img/jupiter.jpg', 'Data/patt.jupiter', 50))
+planets.append(Planet('img/marte.jpg', 'Data/patt.x', 25))
+planets.append(Planet('img/venus.jpg', 'Data/patt.hiro', 20))
+planets.append(Planet('img/sol.jpg', 'Data/patt.sample1', 80))
 
 running = True
 while running:

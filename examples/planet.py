@@ -24,8 +24,8 @@ class Planet:
 	# update
 
 	def draw(self):
-		ambient = [0.0, 0.0, 1.0, 1.0]
-		flash = [0.0, 0.0, 1.0, 1.0]
+		ambient = [0.0, 0.0, 0.0, 1.0]
+		flash = [0.0, 0.0, 0.0, 1.0]
 		flash_shiny = [50.0]
 		light_position = [100.0,-200.0,200.0,0.0]
 		ambi = [0.1, 0.1, 0.1, 0.1]
