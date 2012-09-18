@@ -19,7 +19,7 @@ class Moon:
 	# __init__
 
 	def update(self):
-		self.rotation += 150/self.radius
+		self.rotation += 5
 		self.translation += 0.1
 
 		if self.rotation >= 360: self.rotation = 0

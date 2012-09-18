@@ -58,7 +58,7 @@ def draw_surface(surface):
 	glMatrixMode(GL_MODELVIEW)
 # draw_surface
 
-artoolkit_init()
+artoolkit_init(640, 480, '/dev/video0', 'Data/camera_para.dat')
 size = artoolkit_size()
 
 pygame.init()
