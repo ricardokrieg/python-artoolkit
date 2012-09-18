@@ -61,8 +61,8 @@ screen = pygame.display.set_mode((640, 480), HWSURFACE|OPENGL|DOUBLEBUF)
 pygame.display.set_caption('ARToolKit')
 glutInit()
 
-ARToolKit.init()
-size = (640, 480)
+artoolkit_init()
+size = artoolkit_size()
 
 planets = []
 
@@ -75,17 +75,17 @@ while running:
 		if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE: running = False
 	# for
 
-	ARToolKit.next_frame()
+	next_frame()
 
 	glClear(GL_COLOR_BUFFER_BIT)
 	glColor3f(1, 1, 1)
 	
-	frame = numpy.asarray(planets[0].artoolkit.frame, dtype=numpy.uint8).reshape(size[1], size[0], 3)
+	frame = numpy.asarray(artoolkit_frame(), dtype=numpy.uint8).reshape(size[1], size[0], 3)
 	image = cv.fromarray(frame)
 	pyimage = pygame.image.frombuffer(image.tostring(), cv.GetSize(image), 'RGB')
 	draw_surface(pyimage)
 
-	ARToolKit.load_projection_matrix()
+	load_projection_matrix()
 
 	for planet in planets:
 		planet.artoolkit.update()
@@ -98,4 +98,4 @@ while running:
 	pygame.display.flip()
 # while
 
-ARToolKit.close()
+artoolkit_close()
